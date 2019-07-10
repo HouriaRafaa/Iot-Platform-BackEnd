@@ -48,7 +48,6 @@ public class UserController {
     public AppUser register(@RequestBody @Valid UserForm userForm) throws RuntimeException
     {
         AppUser user =userRepository.findByEmailIgnoreCase(userForm.getEmail());
-
 //        System.out.println("aaaaaa" + user.getEmail());
 
         if (user!= null) {
@@ -74,6 +73,13 @@ public class UserController {
     }
 
 
+    @RequestMapping(value = "/getUserState",method = RequestMethod.GET)
+
+    public boolean getState(Authentication authentication){
+        AppUser appUser=accountService.loadUserByEmail(authentication.getName());
+        return  appUser.isActived();
+    }
+
     @RequestMapping (value = "/send-email",method = RequestMethod.POST)
     public String resetPasssowrd(@RequestBody UserForm userForm ){
         AppUser appUser=userRepository.findByEmailIgnoreCase(userForm.getEmail());
@@ -90,7 +96,7 @@ public class UserController {
             mailMessage.setSubject("Reset Your Password!");
             mailMessage.setFrom("esisba.iot@gmail.com");
             mailMessage.setText("To reset your password, please click here : "
-                    + "http://localhost:8080/update-password?token=" + confirmationToken.getConfirmationToken());
+                    + "http://localhost:8080/reset-password?token=" + confirmationToken.getConfirmationToken());
             emailSenderService.sendEmail(mailMessage);
         }
        return  "Message Envoyé";
@@ -108,7 +114,7 @@ public class UserController {
 //    }
 
 
-    @RequestMapping(value = "update-password",method= {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "reset-password",method= {RequestMethod.GET, RequestMethod.POST})
     public String updatePassword(@RequestParam("token")String confirmationToken,@RequestBody UserForm userForm){
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
         if(token != null)

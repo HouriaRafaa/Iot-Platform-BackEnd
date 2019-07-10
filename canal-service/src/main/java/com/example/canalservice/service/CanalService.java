@@ -12,7 +12,7 @@ public interface CanalService {
 
      Canal saveCanal(String nom, String description, Long appUser, List<Field> fields);
 
-     void updateCanal(long id, String nom, String description, List<Field> fields);
+     void updateCanal(int id, String nom, String description, List<Field> fields);
 
 }
 

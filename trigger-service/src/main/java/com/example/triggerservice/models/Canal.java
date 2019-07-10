@@ -11,10 +11,13 @@ import java.util.Date;
  @Data @AllArgsConstructor @NoArgsConstructor
 public class Canal {
 
-    private Long id;
+
+    private String id;
+    private int canalId;
     private String nom;
     private String description;
     private Date dateCreation;
+
 
     private String cleLecture;
     private String cleEcriture;

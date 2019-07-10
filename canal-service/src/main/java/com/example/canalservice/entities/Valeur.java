@@ -3,25 +3,23 @@ package com.example.canalservice.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.util.Date;
 
-@Entity @Data @NoArgsConstructor
+@Document
+@Data @NoArgsConstructor
 public class Valeur {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private double valeur;
     private Date date;
 
-
-
-
-
     @JsonBackReference
-    @ManyToOne
+    @DBRef
     private Field field;
 
 

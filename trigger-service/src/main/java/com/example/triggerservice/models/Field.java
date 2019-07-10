@@ -10,8 +10,8 @@ import java.util.Collection;
  @Data @AllArgsConstructor @NoArgsConstructor
 public class Field {
 
-    private Long id;
-
+    private String id;
+     private int fieldId;
     private String nom;
 
     private Canal canal;
@@ -25,7 +25,7 @@ public class Field {
         this.valeur = valeur;
     }
 
-    public Field(Long id,String nom){
+    public Field(String id,String nom){
         this.id=id;
         this.nom=nom;
     }

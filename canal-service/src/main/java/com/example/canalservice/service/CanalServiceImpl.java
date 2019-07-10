@@ -21,10 +21,17 @@ public class CanalServiceImpl implements CanalService {
     @Autowired
     FieldRepository fieldRepository;
 
+    @Autowired
+    NextSequenceService nextSequenceService;
+
     @Override
     public Canal saveCanal(String nom, String description, Long user, List<Field> fields) {
         Canal canal = new Canal();
+
+
        canal.setNom(nom);
+        canal.setCanalId(nextSequenceService.getNextSequence("customSequences"));
+
        canal.setDescription(description);
        canal.setAppUser(user);
         canal.setFields(fields);
@@ -32,26 +39,31 @@ public class CanalServiceImpl implements CanalService {
     }
 
     @Override
-    public void updateCanal(long id, String nom, String description, List<Field> fields) {
-        Canal canal = canalRepository.findCanalById(id);
+    public void updateCanal(int id, String nom, String description, List<Field> fields) {
+        Canal canal = canalRepository.findCanalByCanalId(id);
         this.setCanalInfo(canal, nom, description);
         List<Field> fieldList = fieldRepository.findFieldByCanal(canal);
-        ArrayList<Long> tableId = new ArrayList<>();
+        ArrayList<Integer> tableId = new ArrayList<>();
 
         for(Field field: fields){
-            if(!(field.getId() == -1)){
-                Field f = fieldRepository.findFieldById(field.getId());
+            if(!(field.getFieldId() == -1)){
+                Field f = fieldRepository.findFieldByFieldId(field.getFieldId());
                 f.setNom(field.getNom());
                 fieldRepository.save(f);
-                tableId.add(field.getId());
+                tableId.add(field.getFieldId());
             }else{
-                fieldRepository.save(new Field(field.getNom(), canal, null));
+               Field my= fieldRepository.save(new Field(nextSequenceService.getNextSequence("customSequences2"),field.getNom(), canal, null));
+
+                canal.getFields().add(my);
+                canalRepository.save(canal);
             }
         }
-
         for(Field field: fieldList){
-            if(!tableId.contains(field.getId())){
-                fieldRepository.deleteById(field.getId());
+            if(!tableId.contains(field.getFieldId())){
+                fieldRepository.deleteFieldByFieldId(field.getFieldId());
+                canal.getFields().remove(field);
+                canalRepository.save(canal);
+
             }
         }
 

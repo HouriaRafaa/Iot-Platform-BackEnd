@@ -13,7 +13,7 @@ import java.util.Date;
 public class ValeurData {
 
 
-    Long id;
+    String id;
 
    @CsvBindByName(column = "Value", required = true)
     Double valeur;

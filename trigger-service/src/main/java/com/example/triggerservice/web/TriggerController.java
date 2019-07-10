@@ -44,7 +44,7 @@ public class TriggerController {
     headers.add("Authorization", request.getHeader("Authorization"));
     headers.add("content-type","application/json");
 
-    ResponseEntity<AppUser> responseEntity=restTemplate.exchange("http://localhost:8096/appUsers/"+String.valueOf(payload.get("userId")),
+    ResponseEntity<AppUser> responseEntity=restTemplate.exchange("http://authentification-service/appUsers/"+String.valueOf(payload.get("userId")),
             HttpMethod.GET,
             new HttpEntity<>("parameters", headers),
             AppUser.class

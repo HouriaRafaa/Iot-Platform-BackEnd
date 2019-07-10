@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import sun.misc.Request;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ public class ReactController {
 
     @Autowired
     ReactRepository reactRepository;
-
 
 
     @Autowired
@@ -61,7 +61,7 @@ public class ReactController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", request.getHeader("Authorization"));
         headers.add("content-type","application/json");
-        ResponseEntity<AppUser> appUser=restTemplate.exchange("http://localhost:8096/appUsers/"+String.valueOf(payload.get("userId")),
+        ResponseEntity<AppUser> appUser=restTemplate.exchange("http://authentification-service/appUsers/"+String.valueOf(payload.get("userId")),
                 HttpMethod.GET,
                 new HttpEntity<>("parameters", headers),
                 AppUser.class
@@ -69,34 +69,42 @@ public class ReactController {
         Long userId=appUser.getBody().getId();
 
 
-        ResponseEntity<Canal> canal=restTemplate.exchange("http://localhost:8092/Allcanals/"+String.valueOf(payload.get("CanalId")),
+        ResponseEntity<Canal> canal=restTemplate.exchange("http://canal-service/Allcanals/"+payload.get("CanalId"),
                 HttpMethod.GET,
                 new HttpEntity<>("parameters", headers),
                 Canal.class
         );
 
-        Long canalId=canal.getBody().getId();
+
+        int canalId=canal.getBody().getCanalId();
 
 
-        ResponseEntity<Field> field=restTemplate.exchange("http://localhost:8092/canals/"+String.valueOf(payload.get("CanalId")+"/fields/"+String.valueOf(payload.get("fieldId"))),
+        System.out.println("hhhhhhhhhhhhhhhhhhhh "+canalId);
+
+
+        ResponseEntity<Field> field=restTemplate.exchange("http://canal-service/canals/"+payload.get("CanalId")+"/field/"+payload.get("field"),
                 HttpMethod.GET,
                 new HttpEntity<>("parameters", headers),
                 Field.class
         );
-        Long fieldId=field.getBody().getId();
-        react=reactService.saveReact(payload.get("nom").toString(),
+        int fieldId=field.getBody().getFieldId();
 
+        System.out.println("hhhhhhhhhhhh bbbbbbbb "+fieldId);
+
+
+        react=reactService.saveReact(payload.get("nom").toString(),
                 payload.get("condition").toString(),
                 Double.parseDouble(String.valueOf(payload.get("valeur"))),
-                canalId,
+                userId,
+               canalId,
                 fieldId
-                ,userId);
-        payload.forEach((s, o) -> {
-            if (s.contains("message") && !(payload.get("message").toString().equals("")))
+        );
+
+            if (!(payload.get("message").toString().equals(""))) {
                 trigerActionRepository.save(new TrigerAction(null, payload.get("message").toString(), payload.get("tel").toString(), react));
+            }
 
 
-        });
 
         payload.forEach((s,o)->{
             if(s.contains("commande") && !(payload.get("commande").toString().equals(""))){
@@ -122,31 +130,59 @@ public class ReactController {
 
 
     @RequestMapping(value = "/ReactField/{fieldId}")
-    public List<React> getReactByFields(@PathVariable Long fieldId, HttpServletRequest request){
+    public List<React> getReactByFields(@PathVariable int fieldId, HttpServletRequest request){
 
         List<React> reacts=new ArrayList<>();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", request.getHeader("Authorization"));
         headers.add("content-type","application/json");
 
-        ResponseEntity<Field> field=restTemplate.exchange("http://localhost:8092/fields/"+fieldId,
+        ResponseEntity<Field> field=restTemplate.exchange("http://canal-service/fields/"+fieldId,
                 HttpMethod.GET,
                 new HttpEntity<>("parameters", headers),
                 Field.class
         );
-        Long fId=field.getBody().getId();
+        int fId=field.getBody().getFieldId();
          reacts=reactRepository.findReactByField(fId);
          return reacts;
     }
 
 
+
+
     @RequestMapping(value = "/UserReact/{userId}",method = RequestMethod.GET)
 
-    public  List<React> getReactUser(@PathVariable Long userId){
+
+    public  List<React> getReactUser(@PathVariable Long userId)  {
 
         List<React> reacts=reactRepository.findReactByAppUser(userId);
         return reacts;
 
+    }
+
+
+
+
+    @RequestMapping(value = "/DesactivateReact/{reactId}",method = RequestMethod.GET)
+    public String  desactiverReact(@PathVariable Long reactId)   {
+        React react= reactRepository.findReactById(reactId);
+        if(react.isActivated())
+            react.setActivated(false);
+        reactRepository.save(react);
+
+        return "React desactive messkin :( :(  ";
+    }
+
+    @RequestMapping(value = "/ActivateReact/{reactId}",method = RequestMethod.GET)
+
+    public String  activerReact(@PathVariable Long reactId){
+
+        React react= reactRepository.findReactById(reactId);
+        if(!react.isActivated())
+            react.setActivated(true);
+        reactRepository.save(react);
+
+        return "React active :) :) الحمد لله  ";
     }
 
 

@@ -37,6 +37,8 @@ public class JWTAutorisationFilter extends OncePerRequestFilter {
         else if (request.getRequestURI().equals("/login")) {
             filterChain.doFilter(request, response);
             return;
+
+
         }
         else {
 

@@ -2,3 +2,11 @@ twilio:
   account_sid: AC85200931be34073bbe8644de39d4f28f
   auth_token: 681725217f86c2c0e3028a8baa587fa8
   trial_number: +12602225235
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-peer1:8761/eureka/,http://eureka-peer2:8762/eureka/
+
+

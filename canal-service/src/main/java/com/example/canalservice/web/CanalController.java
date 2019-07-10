@@ -2,11 +2,13 @@ package com.example.canalservice.web;
 
 import com.example.canalservice.dao.CanalRepository;
 import com.example.canalservice.dao.FieldRepository;
+import com.example.canalservice.dao.ValeurRepository;
 import com.example.canalservice.entities.Canal;
 import com.example.canalservice.entities.Field;
 import com.example.canalservice.entities.Valeur;
 import com.example.canalservice.models.AppUser;
 import com.example.canalservice.service.CanalService;
+import com.example.canalservice.service.NextSequenceService;
 import javafx.application.Application;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Array;
 import java.util.*;
 
 @RestController
@@ -36,6 +39,11 @@ public class CanalController {
     private RestTemplate restTemplate;
 
 
+    @Autowired
+    private ValeurRepository valeurRepository;
+
+    @Autowired
+    private NextSequenceService nextSequenceService;
 
 
     @RequestMapping(value = "/add-canal", method = RequestMethod.POST)
@@ -47,12 +55,11 @@ public class CanalController {
         headers.add("Authorization", request.getHeader("Authorization"));
         headers.add("content-type","application/json");
 
-        ResponseEntity<AppUser> responseEntity=restTemplate.exchange("http://localhost:8096/appUsers/"+String.valueOf(payload.get("userId")),
+        ResponseEntity<AppUser> responseEntity=restTemplate.exchange("http://authentification-service/appUsers/"+String.valueOf(payload.get("userId")),
                 HttpMethod.GET,
                 new HttpEntity<>("parameters", headers),
                 AppUser.class
                 );
-
 
 
         System.out.println("UserId"+responseEntity.getBody().getId());
@@ -65,21 +72,28 @@ public class CanalController {
              userId,
                 null
         );
-
-
         canal.setCleEcriture(UUID.randomUUID().toString().replaceAll("-","").toUpperCase());
         canal.setCleLecture(UUID.randomUUID().toString().replaceAll("-","").toUpperCase());
         canal.setDateCreation(new Date());
         canalRepository.save(canal);
 
+
+        ArrayList<Field>myFields=new ArrayList<>();
+
         payload.forEach((s, o) -> {
             if (s.contains("field")){
-                fieldRepository.save(new Field(o.toString(), canal, null));
-            }
+
+               Field f= fieldRepository.save(new Field(nextSequenceService.getNextSequence("customSequences2"),o.toString(), canal, null));
+               myFields.add(f);
+               canal.setFields(myFields);
+               canalRepository.save(canal);
+               }
         });
+
+
     }
     @RequestMapping(value = "/canals/{id}", method = RequestMethod.POST)
-    public void update(@RequestBody Map<String, Object> payload, @PathVariable long id) throws Exception {
+    public void update(@RequestBody Map<String, Object> payload, @PathVariable int id) throws Exception {
 
         ArrayList<Field> fields = new ArrayList<>();
         payload.forEach((s, o) -> {
@@ -89,7 +103,7 @@ public class CanalController {
                 if (o.toString().contains("{")){
                     o = o.toString().replaceAll("\\[", "").replaceAll("\\]","").replaceAll("\\{", "").replaceAll("\\}","");
                     String[] kvPairs = o.toString().split(",");
-                    long fieldId = 0;
+                    int fieldId = 0;
                     for (String kvPair : kvPairs) {
                         String[] kv = kvPair.split("=");
                         String key = kv[0];
@@ -98,13 +112,14 @@ public class CanalController {
                             if (value.contains("-1")) {
                                 fieldId = -1;
                             } else {
-                                fieldId = Long.parseLong(value);
+                                fieldId =Integer.parseInt(value);
 
                             }
                         }
                         if (key.contains("nom")){
                             fields.add(new Field(fieldId, value));
                         }
+
                     }
                 }
             }
@@ -125,9 +140,21 @@ public class CanalController {
 
 
     @RequestMapping(value = "/canals/{id}",method = RequestMethod.DELETE)
-    public void deleteCanal(@PathVariable Long id){
+    public void deleteCanal(@PathVariable int id){
 
-        Canal canal= canalRepository.findCanalById(id);
+        Canal canal= canalRepository.findCanalByCanalId(id);
+
+        List<Field>fields=fieldRepository.findFieldByCanal(canal);
+
+        for(Field f: fields){
+          List<Valeur>  valeurs= valeurRepository.findValeurByField(f);
+          for(Valeur v : valeurs){
+              valeurRepository.delete(v);
+          }
+        }
+
+
+        fieldRepository.deleteAll(fields);
 
         if(canal!=null){
             canalRepository.delete(canal);
@@ -138,9 +165,8 @@ public class CanalController {
 
     @RequestMapping(value = "/Allcanals/{id}",method = RequestMethod.GET)
 
-    public Canal getCanal(@PathVariable Long id) {
-
-        Canal canal = canalRepository.findCanalById(id);
+    public Canal getCanal(@PathVariable int id) {
+        Canal canal = canalRepository.findCanalByCanalId(id);
 
         if (canal != null) {
             return canal;
@@ -152,9 +178,9 @@ public class CanalController {
 
     @RequestMapping(value = "/Allcanals/{id}/fields",method = RequestMethod.GET)
 
-    public List<Field> getField(@PathVariable Long id) {
+    public List<Field> getField(@PathVariable int id) {
 
-        Canal canal = canalRepository.findCanalById(id);
+        Canal canal = canalRepository.findCanalByCanalId(id);
 
         if (canal != null) {
             return  (List<Field>) canal.getFields();
@@ -163,20 +189,63 @@ public class CanalController {
         return  null;
     }
 
+
+
+
     @RequestMapping(value = "/canals/{UserId}",method = RequestMethod.GET)
 
     public List<Canal> getUserCanal(@PathVariable Long UserId){
 
-        List<Canal> canals=canalRepository.findCanalByAppUser(UserId);
+         return canalRepository.findCanalByAppUser(UserId);
 
-        return canals;
+    }
+
+  //canals/"+payload.get("CanalId")+"/fields/"+payload.get("fieldId")
+    @RequestMapping(value ="/canals/{canalId}/field/{fieldId}" ,method = RequestMethod.GET)
+
+    public Field findMyfield(@PathVariable int canalId,@PathVariable int fieldId){
+
+        Canal c = canalRepository.findCanalByCanalId(canalId);
+        List<Field> fields=fieldRepository.findFieldByCanal(c);
+
+        for(Field f :fields){
+           if(f.getFieldId()==fieldId){
+               System.out.println("myyyyyyyyyfileeeees "+f);
+               return f;
+           }
+        }
+
+        return null;
     }
 
 
+    @RequestMapping(value = "/fields/{fieldId}")
+    Field getMyfield(@PathVariable int fieldId){
+
+        return fieldRepository.findFieldByFieldId(fieldId);
+    }
+
+    @RequestMapping(value = "/canals/{canalId}/fields")
+
+    public List<Field> getMyfields(@PathVariable int canalId){
+
+      Canal c = canalRepository.findCanalByCanalId(canalId);
+
+      List<Field> fields = fieldRepository.findFieldByCanal(c);
+
+      System.out.println("mys " +fields);
+      return  fields;
+
+    }
 
 
+    @RequestMapping(value = "/Mycanal/{id}",method = RequestMethod.GET)
+    public Canal getMyCanal(@PathVariable int id ){
 
+        Canal c = canalRepository.findCanalByCanalId(id);
 
+        return c;
+    }
 
 
     @RequestMapping(value = "/canals",method = RequestMethod.GET)
@@ -195,8 +264,6 @@ public class CanalController {
     @RequestMapping(value = "/read", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public List<Valeur2> readData(@RequestParam Map<String,String> allParams ) {
-
-
 
         List<Valeur> list=null;
         List<Valeur2> valeur = new ArrayList<Valeur2>();
@@ -231,7 +298,7 @@ public class CanalController {
 class Valeur2{
 
 
-    Long id;
+    String id;
     Double valeur;
     Date date;
 

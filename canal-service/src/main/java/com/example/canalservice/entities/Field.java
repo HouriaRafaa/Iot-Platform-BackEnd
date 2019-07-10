@@ -3,40 +3,65 @@ package com.example.canalservice.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import sun.reflect.CallerSensitive;
 
-import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
-@Entity @Data @AllArgsConstructor @NoArgsConstructor
+@Document
+@Getter
+@Setter
+@AllArgsConstructor @NoArgsConstructor
 public class Field {
 
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id
+    private String id;
+
+    private int fieldId;
 
     private String nom;
 
+    @Override
+    public String toString() {
+        return "Field{" +
+                "id='" + id + '\'' +
+                ", fieldId=" + fieldId +
+                ", nom='" + nom + '\'' +
+                '}';
+    }
+
     @JsonBackReference
-    @ManyToOne
+    @DBRef
     private Canal canal;
 
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "field")
-    private Collection<Valeur> valeur;
+    @DBRef
+    private Collection<Valeur> valeur = new ArrayList<>();
 
 
-    public Field(String nom, Canal canal, Collection<Valeur> valeur) {
+    public Field(int fieldId, String nom, Canal canal, Collection<Valeur> valeur) {
+        this.fieldId=fieldId;
         this.nom = nom;
         this.canal = canal;
         this.valeur = valeur;
     }
 
-    public Field(Long id,String nom){
-        this.id=id;
+
+    public Field(String nom, Canal canal, Collection<Valeur> valeur) {
+
+        this.nom = nom;
+        this.canal = canal;
+        this.valeur = valeur;
+    }
+    public Field(int id,String nom){
+        this.fieldId=id;
         this.nom=nom;
     }
 

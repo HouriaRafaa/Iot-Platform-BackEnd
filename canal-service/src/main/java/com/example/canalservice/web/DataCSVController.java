@@ -35,7 +35,7 @@ public class DataCSVController {
     RestTemplate restTemplate;
 
     @GetMapping("/export-data/{id}")
-    public void exportCSV(HttpServletResponse response , @PathVariable long id) throws Exception {
+    public void exportCSV(HttpServletResponse response , @PathVariable String id) throws Exception {
 
         List<Valeur> list=null;
         List<ValeurData> valeur = new ArrayList<ValeurData>();
@@ -66,7 +66,7 @@ public class DataCSVController {
 
     @PostMapping("/import-data/{id}")
     @ResponseBody
-    public void importCSV(@RequestParam("file") MultipartFile file,  @PathVariable long id) {
+    public void importCSV(@RequestParam("file") MultipartFile file,  @PathVariable String id) {
 
         File convFile = new File( file.getOriginalFilename() );
         FileOutputStream fos = null;

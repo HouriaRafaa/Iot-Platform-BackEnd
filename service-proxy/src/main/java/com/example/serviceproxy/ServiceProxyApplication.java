@@ -16,6 +16,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableDiscoveryClient
 @SpringBootApplication
 public class ServiceProxyApplication {
+
     @Bean
     public FilterRegistrationBean corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -29,6 +30,7 @@ public class ServiceProxyApplication {
         bean.setOrder(0);
         return bean;
     }
+
     public static void main(String[] args) {
         SpringApplication.run(ServiceProxyApplication.class, args);
     }

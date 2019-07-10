@@ -2,21 +2,27 @@ package com.example.canalservice.entities;
 
 import com.example.canalservice.models.AppUser;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
-import javax.transaction.Transactional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
-@Entity @Data @AllArgsConstructor @NoArgsConstructor
+@Document
+@Getter
+@Setter
+@AllArgsConstructor @NoArgsConstructor
 public class Canal {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id
+    private String id;
+
+    private int canalId;
+
     private String nom;
     private String description;
     private Date dateCreation;
@@ -24,12 +30,19 @@ public class Canal {
     private String cleLecture;
     private String cleEcriture;
 
-
     private Long appUser;
 
+    @Override
+    public String toString() {
+        return "Canal{" +
+                "id='" + id + '\'' +
+                ", nom='" + nom + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 
     @JsonManagedReference
-    @OneToMany(mappedBy ="canal",cascade = CascadeType.ALL)
+   @DBRef
     private Collection<Field> fields = new ArrayList<>();
 
 }

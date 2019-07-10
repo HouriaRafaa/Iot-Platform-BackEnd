@@ -11,9 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 
@@ -26,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException ,RuntimeException{
         AppUser appUser=accountService.loadUserByEmail(email);
-        if(appUser==null)throw new UsernameNotFoundException("Invalid user");
+       // if(appUser==null)throw new UsernameNotFoundException();
 
 //        if(!appUser.isActived()){
 //            throw  new RuntimeException("Le compte n'est pas activé");

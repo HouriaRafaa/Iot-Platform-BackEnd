@@ -9,11 +9,9 @@ import com.example.authentificationservice.entities.AppUser;
 import com.example.authentificationservice.entities.ConfirmationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 
@@ -44,6 +42,7 @@ public class AccountServiceImpl implements AccountService {
         AppUser user = appUserRepository.findByUserName(username);
         if(user!=null)
             throw new RuntimeException("User already exists");
+
         if(!password.equals(confirmedPassword)) throw  new RuntimeException("Please Confirm your password");
         AppUser appUser = new AppUser();
         appUser.setUserName(username);
@@ -91,11 +90,7 @@ public class AccountServiceImpl implements AccountService {
 
         AppUser user=appUserRepository.findByEmailIgnoreCase(email);
 
-
-            if(user == null) {
-                throw new RuntimeException("Invalid User: " +email);
-            }
-
+        if(user==null) throw  new RuntimeException("user makench");
         return user;
     }
 

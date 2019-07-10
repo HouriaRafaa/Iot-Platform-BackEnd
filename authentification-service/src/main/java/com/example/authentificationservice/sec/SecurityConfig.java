@@ -9,16 +9,11 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
     }
+
+
 
     @Bean
     public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
@@ -59,11 +56,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          http.authorizeRequests().antMatchers("/login/**","/register/**","/record/**","/confirm-account/**",
                  "/send-email",
                  " 192.168.43.11/record/**"
-                 ,"/password-confirmation/**"
+                 ,"/password-confirmation/**",
+                 "/reset-password/**"
                  ,"/export-data/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
-        http.authorizeRequests().antMatchers(HttpMethod.GET,"/update-password/**");
+        http.authorizeRequests().antMatchers(HttpMethod.GET,"/reset-password/**");
         http.authorizeRequests().antMatchers("/appUsers/**","/appRoles/**").hasAuthority("ADMIN");
+
 
 
        //  http.authorizeRequests().antMatchers("/canals");
@@ -78,5 +77,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          http.addFilterBefore(new JWTAutorisationFilter(),UsernamePasswordAuthenticationFilter.class);
 
         }
+
 
 }

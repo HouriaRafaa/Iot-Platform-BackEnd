@@ -9,7 +9,7 @@ import java.util.Date;
  @Data @NoArgsConstructor
 public class Valeur {
 
-    private Long id;
+    private String id;
     private double valeur;
     private Date date;
     private Field field;

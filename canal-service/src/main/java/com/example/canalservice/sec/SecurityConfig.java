@@ -39,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //Pour les Api_key dans le navigateur
 
 
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         //super.configure(web);
@@ -50,9 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
          http.csrf().disable();
          http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-         http.authorizeRequests().antMatchers("/login/**","/register/**","/record/**","/confirm-account/**",
-                 "/send-email",
-                 " 192.168.43.11/record/**"
+         http.authorizeRequests().antMatchers("/login/**","/register/**","/confirm-account/**",
+                 "/send-email"
                  ,"/password-confirmation/**"
                  ,"/export-data/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated();

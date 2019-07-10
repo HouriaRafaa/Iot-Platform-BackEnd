@@ -16,16 +16,14 @@ public class ReactServiceImpl implements ReactService {
      @Autowired
      EmailSenderService emailSenderService;
     @Override
-    public React saveReact(String nom, String condition, double valeur, Long canal, Long field, Long appUser) {
+    public React saveReact(String nom, String condition, double valeur, Long appUser,int canal, int field) {
 
-        React react=new React();
-        react.setNom(nom);
-        react.setCond(condition);
-        react.setVal(valeur);
-
+        React react = new React();
+        react.setNom(nom); react.setCond(condition); react.setVal(valeur);
         react.setAppUser(appUser);
         react.setCanal(canal);
         react.setField(field);
+        react.setActivated(true);
         reactRepository.save(react);
         return react;
     }

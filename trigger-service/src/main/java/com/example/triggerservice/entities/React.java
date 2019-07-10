@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Data @NoArgsConstructor @AllArgsConstructor
+@Entity @Data @NoArgsConstructor
 public class React {
 
 
@@ -17,14 +17,17 @@ public class React {
     private Long id;
     private String nom;
     private String cond;
+
     private double val;
+
+    private boolean activated;
 
     private Long appUser;
 
-    private Long canal;
+    private int canal;
 
 
-    private Long field;
+    private int field;
 
 
 

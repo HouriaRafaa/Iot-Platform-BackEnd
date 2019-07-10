@@ -3,6 +3,10 @@ package com.example.authentificationservice.service;
 
 import com.example.authentificationservice.entities.AppRole;
 import com.example.authentificationservice.entities.AppUser;
+import org.apache.http.HttpResponse;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public interface AccountService
 {

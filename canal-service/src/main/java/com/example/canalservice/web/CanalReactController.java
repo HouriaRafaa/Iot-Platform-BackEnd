@@ -45,7 +45,7 @@ public class CanalReactController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", request.getHeader("Authorization"));
         headers.add("content-type","application/json");
-
+        ArrayList<Valeur> myvalues= new ArrayList<>();
         Canal canal = canalRepository.findCanalByCleEcriture(allParams.get("key"));
 
         Pusher pusher = new Pusher("762880", "84bee67aad46ed497369", "5017a5ee0387085255ae");
@@ -58,13 +58,22 @@ public class CanalReactController {
             for (Map.Entry<String, String> entry : allParams.entrySet()) {
                 if (field.getNom().equalsIgnoreCase(entry.getKey())) {
                     try {
+
                         Double data = Double.parseDouble(entry.getValue());
+
+                        System.out.println("aaaaaaaaaaaaaaaaaaaaaaa  "+field.getNom());
                         Valeur valeur = new Valeur(data, field, new Date());
+
                         valeurRepository.save(valeur);
 
+                        //myvalues.add(valeur);
+
+                        field.getValeur().add(valeur);
+
+                        fieldRepository.save(field);
 
                         ResponseEntity<String> twilio = restTemplate.exchange(
-                                "http://localhost:8093/twilioTriger/"+field.getId()+"/"+data,
+                                "http://trigger-service/twilioTriger/"+field.getFieldId()+"/"+data,
                                 HttpMethod.GET,
                                 new HttpEntity<>("parameters", headers),
                                       String.class);
@@ -73,7 +82,7 @@ public class CanalReactController {
 
 
                         ResponseEntity<String> httptriger = restTemplate.exchange(
-                                "http://localhost:8093/httpTriger/"+field.getId()+"/"+data,
+                                "http://trigger-service/httpTriger/"+field.getFieldId()+"/"+data,
                                 HttpMethod.GET,
                                 new HttpEntity<>("parameters", headers),
                                 String.class);
@@ -81,7 +90,7 @@ public class CanalReactController {
                         httptriger.getBody();
 
                         ResponseEntity<String> emailTriger = restTemplate.exchange(
-                                "http://localhost:8093/EmailTriger/"+field.getId()+"/"+data,
+                                "http://trigger-service/EmailTriger/"+field.getFieldId()+"/"+data,
                                 HttpMethod.GET,
                                 new HttpEntity<>("parameters", headers),
                                 String.class);
