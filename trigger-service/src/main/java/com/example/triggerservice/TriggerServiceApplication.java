@@ -3,6 +3,7 @@ package com.example.triggerservice;
 import com.example.triggerservice.entities.Commande;
 import com.example.triggerservice.entities.React;
 import com.example.triggerservice.entities.Triger;
+import it.ozimov.springboot.mail.configuration.EnableEmailTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 
 @EnableDiscoveryClient
 @SpringBootApplication
+@EnableEmailTools
+
 
 public class TriggerServiceApplication implements RepositoryRestConfigurer,CommandLineRunner {
 

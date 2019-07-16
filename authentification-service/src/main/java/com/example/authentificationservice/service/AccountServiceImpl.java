@@ -8,11 +8,11 @@ import com.example.authentificationservice.entities.AppRole;
 import com.example.authentificationservice.entities.AppUser;
 import com.example.authentificationservice.entities.ConfirmationToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
 
 
 @Service
@@ -23,12 +23,12 @@ public class AccountServiceImpl implements AccountService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private AppUserRepository appUserRepository;
     private AppRoleRepository appRoleRepository;
+    @Autowired
+    private NewEmailSenderService newEmailSenderService;
 
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
 
-    @Autowired
-    private EmailSenderService emailSenderService;
 
     public AccountServiceImpl(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.appUserRepository = appUserRepository;
@@ -46,7 +46,7 @@ public class AccountServiceImpl implements AccountService {
         if(!password.equals(confirmedPassword)) throw  new RuntimeException("Please Confirm your password");
         AppUser appUser = new AppUser();
         appUser.setUserName(username);
-       // appUser.setActived(false);
+        // appUser.setActived(false);
         appUser.setPassword(bCryptPasswordEncoder.encode(password));
         appUser.setEmail(email);
         appUserRepository.save(appUser);
@@ -56,13 +56,22 @@ public class AccountServiceImpl implements AccountService {
 
         confirmationTokenRepository.save(confirmationToken);
 
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(appUser.getEmail());
-            mailMessage.setSubject("Complete Registration!");
-            mailMessage.setFrom("esisba.iot@gmail.com");
-            mailMessage.setText("To confirm your account, please click here : "
+//            SimpleMailMessage mailMessage = new SimpleMailMessage();
+//            mailMessage.setTo(appUser.getEmail());
+//            mailMessage.setSubject("Complete Registration!");
+//            mailMessage.setFrom("esisba.iot@gmail.com");
+//            mailMessage.setText("To confirm your account, please click here : "
+//                    + "http://localhost:8080/confirm-account?token=" + confirmationToken.getConfirmationToken());
+//            emailSenderService.sendEmail(mailMessage);
+
+        // sending verification email
+
+        try {
+            newEmailSenderService.sendEmail(appUser.getEmail(), appUser.getUserName(),"Complete Registration!","To confirm your account, please click here : "
                     + "http://localhost:8080/confirm-account?token=" + confirmationToken.getConfirmationToken());
-            emailSenderService.sendEmail(mailMessage);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
 
         return appUser;

@@ -82,7 +82,6 @@ public class CanalController {
 
         payload.forEach((s, o) -> {
             if (s.contains("field")){
-
                Field f= fieldRepository.save(new Field(nextSequenceService.getNextSequence("customSequences2"),o.toString(), canal, null));
                myFields.add(f);
                canal.setFields(myFields);
@@ -296,15 +295,9 @@ public class CanalController {
 @AllArgsConstructor
 @NoArgsConstructor
 class Valeur2{
-
-
     String id;
     Double valeur;
     Date date;
-
-
-
-
 
 }
 

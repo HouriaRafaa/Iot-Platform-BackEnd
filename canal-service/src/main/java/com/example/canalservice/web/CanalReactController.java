@@ -77,9 +77,7 @@ public class CanalReactController {
                                 HttpMethod.GET,
                                 new HttpEntity<>("parameters", headers),
                                       String.class);
-
                         twilio.getBody();
-
 
                         ResponseEntity<String> httptriger = restTemplate.exchange(
                                 "http://trigger-service/httpTriger/"+field.getFieldId()+"/"+data,

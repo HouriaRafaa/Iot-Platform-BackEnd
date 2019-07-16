@@ -3,6 +3,7 @@ package com.example.authentificationservice;
 import com.example.authentificationservice.entities.AppRole;
 import com.example.authentificationservice.entities.AppUser;
 import com.example.authentificationservice.service.AccountService;
+import it.ozimov.springboot.mail.configuration.EnableEmailTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,6 +15,8 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableDiscoveryClient
 @SpringBootApplication
+@EnableEmailTools
+
 public class AuthentificationServiceApplication implements RepositoryRestConfigurer,CommandLineRunner {
 
 

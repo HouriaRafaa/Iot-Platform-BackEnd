@@ -6,7 +6,8 @@ import com.example.authentificationservice.dao.ConfirmationTokenRepository;
 import com.example.authentificationservice.entities.AppUser;
 import com.example.authentificationservice.entities.ConfirmationToken;
 import com.example.authentificationservice.service.AccountService;
-import com.example.authentificationservice.service.EmailSenderService;
+
+import com.example.authentificationservice.service.NewEmailSenderService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 @RestController
@@ -34,8 +36,7 @@ public class UserController {
     @Autowired
     private AppUserRepository userRepository;
 
-    @Autowired
-    private EmailSenderService emailSenderService;
+
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -43,6 +44,9 @@ public class UserController {
 
     @Autowired
     private AppUserRepository appUserRepository;
+
+    @Autowired
+    private NewEmailSenderService newEmailSenderService;
 
     @PostMapping("/register")
     public AppUser register(@RequestBody @Valid UserForm userForm) throws RuntimeException
@@ -90,16 +94,26 @@ public class UserController {
 
             ConfirmationToken confirmationToken= new ConfirmationToken(appUser);
             confirmationTokenRepository.save(confirmationToken);
+//
+//            SimpleMailMessage mailMessage = new SimpleMailMessage();
+//            mailMessage.setTo(appUser.getEmail());
+//            mailMessage.setSubject("Reset Your Password!");
+//            mailMessage.setFrom("esisba.iot@gmail.com");
+//            mailMessage.setText("To reset your password, please click here : "
+//                    + "http://localhost:8080/update-password?token=" + confirmationToken.getConfirmationToken());
+//            emailSenderService.sendEmail(mailMessage);
 
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(appUser.getEmail());
-            mailMessage.setSubject("Reset Your Password!");
-            mailMessage.setFrom("esisba.iot@gmail.com");
-            mailMessage.setText("To reset your password, please click here : "
-                    + "http://localhost:8080/reset-password?token=" + confirmationToken.getConfirmationToken());
-            emailSenderService.sendEmail(mailMessage);
+
+            // sending verification email
+
+            try {
+                newEmailSenderService.sendEmail(appUser.getEmail(),appUser.getUserName(),"Reset Your Password!","To reset your password, please click here : "
+                        + "http://localhost:8080/reset-password?token=" + confirmationToken.getConfirmationToken());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
-       return  "Message Envoyé";
+        return  "Message Envoyé";
     }
 
 //    @RequestMapping(value = "password-confirmation",method = RequestMethod.GET)
@@ -125,7 +139,6 @@ public class UserController {
         }
         return "Password Changed";
     }
-
 
 
 

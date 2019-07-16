@@ -3,9 +3,6 @@ package com.example.triggerservice.web;
 
 import com.example.triggerservice.dao.*;
 import com.example.triggerservice.entities.*;
-import com.example.triggerservice.models.Field;
-import com.example.triggerservice.models.FieldList;
-import com.example.triggerservice.service.EmailSenderService;
 import com.example.triggerservice.service.ReactService;
 import com.example.triggerservice.twilio.Service;
 import com.example.triggerservice.twilio.SmsRequest;
@@ -17,12 +14,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,9 +37,6 @@ public class ReactCanalController {
 
     @Autowired
     TrigerEmailRepository trigerEmailRepository;
-
-    @Autowired
-    EmailSenderService emailSenderService;
 
 
     @Autowired
