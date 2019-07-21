@@ -199,7 +199,30 @@ public class CanalController {
 
     }
 
-  //canals/"+payload.get("CanalId")+"/fields/"+payload.get("fieldId")
+    @RequestMapping(value = "/usercanals/{UserId}",method = RequestMethod.GET)
+
+    public List<CanalModel> getUserCanal2(@PathVariable Long UserId){
+
+        List<Canal> canals = canalRepository.findCanalByAppUser(UserId);
+        List<CanalModel> canalModels = new ArrayList<>();
+
+        for (Canal c:canals){
+            CanalModel canalModel = new CanalModel();
+            canalModel.setId(Long.parseLong(String.valueOf(c.getCanalId())));
+            canalModel.setNom(c.getNom());
+            canalModel.setAppUser(c.getAppUser());
+            canalModel.setCleEcriture(c.getCleEcriture());
+            canalModel.setCleLecture(c.getCleLecture());
+            canalModel.setDateCreation(c.getDateCreation());
+            canalModel.setDescription(c.getDescription());
+            canalModels.add(canalModel);
+        }
+        return canalModels;
+
+    }
+
+
+    //canals/"+payload.get("CanalId")+"/fields/"+payload.get("fieldId")
     @RequestMapping(value ="/canals/{canalId}/field/{fieldId}" ,method = RequestMethod.GET)
 
     public Field findMyfield(@PathVariable int canalId,@PathVariable int fieldId){
@@ -301,3 +324,19 @@ class Valeur2{
 
 }
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+class CanalModel {
+
+    private Long id;
+
+    private String nom;
+    private String description;
+    private Date dateCreation;
+
+    private String cleLecture;
+    private String cleEcriture;
+
+    private Long appUser;
+}

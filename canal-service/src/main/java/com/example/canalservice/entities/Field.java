@@ -41,6 +41,8 @@ public class Field {
     private Canal canal;
 
 
+
+
     @JsonManagedReference
     @DBRef
     private Collection<Valeur> valeur = new ArrayList<>();

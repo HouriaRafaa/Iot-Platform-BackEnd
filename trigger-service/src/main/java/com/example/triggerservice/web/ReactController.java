@@ -182,7 +182,7 @@ public class ReactController {
             react.setActivated(true);
         reactRepository.save(react);
 
-        return "React active :) :) الحمد لله  ";
+        return "React active  حورية :) :) الحمد لله   ";
     }
 
 
