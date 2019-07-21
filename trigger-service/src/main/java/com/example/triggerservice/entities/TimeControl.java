@@ -24,8 +24,12 @@ public class TimeControl {
 
     @Temporal(TemporalType.DATE)
     private Date dateAction;
-    int hour;
-    int minutes;
+    int hourD;
+    int minutesD;
+
+    int hourA;
+
+    int minutesA;
 
     private   Long idUser;
 

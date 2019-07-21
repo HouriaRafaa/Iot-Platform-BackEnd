@@ -225,7 +225,10 @@ public class TriggerController {
        timeControl= triggerService.saveTimeControl(timeControlForm.getNom(),
                 timeControlForm.getDateControl(),
               Integer.parseInt(timeControlForm.getTimeHour()),
-             Integer.parseInt(timeControlForm.getMinutesHour())
+             Integer.parseInt(timeControlForm.getMinutesHour()),
+
+               Integer.parseInt(timeControlForm.getHourD()),
+               Integer.parseInt(timeControlForm.getMinD())
                ,
                 userId
         );
@@ -236,7 +239,8 @@ public class TriggerController {
     }
 
     @RequestMapping(value = "/ExceuteTimeControl/{id}")
-    public  String executeTimeConntrol (@PathVariable Long id){
+    public  String executeTimeConntrol (@PathVariable Long id)throws Exception{
+
         TimeControl timeControl= timeControlRepository.findById(id).get();
         TimeControlAction timeControlAction=timeControlActionRepository.findTimeControlActionByTimeControl(timeControl);
         Date date=new Date();
@@ -248,8 +252,8 @@ public class TriggerController {
         int minutes = calendar.get(Calendar.MINUTE);
         int hour = calendar.get(Calendar.HOUR);
         Date dateControl = timeControl.getDateAction();
-        int min = timeControl.getMinutes();
-        int  h = timeControl.getHour();
+        int min = timeControl.getMinutesD();
+        int  h = timeControl.getHourD();
         Calendar calendar1 = Calendar.getInstance(TimeZone.getTimeZone("Africa/Algiers"));
         calendar1.setTime(dateControl);
 
@@ -257,15 +261,43 @@ public class TriggerController {
         int monthControl = calendar.get(Calendar.MONTH);
         int dayControl = calendar.get(Calendar.DAY_OF_MONTH);
 
-
         if(year==yearControl & month==monthControl & day==dayControl & minutes==min & hour==h){
 
+
                 return  timeControlAction.getCommande();
+
 
         }
       else  return "pas de commande :( :)";
     }
 
+
+    @RequestMapping(value = "/getTimeControle/{id}",method = RequestMethod.GET)
+    public long getTimeControl (@PathVariable Long id){
+        TimeControl timeControl=timeControlRepository.findById(id).get();
+
+        int hourA=timeControl.getHourA();
+
+        int hourD=timeControl.getHourD();
+
+        int minA=timeControl.getMinutesA();
+
+        int minD=timeControl.getMinutesD();
+
+        int hourDifference = hourD-hourA;
+
+        int minDifference = minD-minA;
+
+        long timeInSecond = hourDifference*60+minDifference*60;
+
+        return timeInSecond*1000;
+    }
+
+    @RequestMapping(value = "/MyTimeControls/{userId}",method = RequestMethod.GET)
+    public List<TimeControl> getMyControlsTimes(Long userId){
+        return timeControlRepository.findTimeControlByIdUser(userId);
+
+    }
 
 }
 
@@ -282,6 +314,8 @@ class TimeControlForm {
 
     private String  minutesHour;
 
+
+    private String hourD,minD;
     private Long idUser;
 
     private String commande;

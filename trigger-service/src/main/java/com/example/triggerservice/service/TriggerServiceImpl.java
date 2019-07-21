@@ -36,12 +36,14 @@ public class TriggerServiceImpl implements TriggerService {
     }
 
     @Override
-    public TimeControl saveTimeControl(String nom, Date dateAction,int hour,int min,Long idUser) {
+    public TimeControl saveTimeControl(String nom, Date dateAction,int hour,int min,int hourA,int minD,Long idUser) {
         TimeControl timeControl = new TimeControl();
         timeControl.setNom(nom);
         timeControl.setDateAction(dateAction);
-        timeControl.setHour(hour);
-        timeControl.setMinutes(min);
+        timeControl.setHourD(hour);
+        timeControl.setMinutesA(min);
+        timeControl.setHourA(hourA);
+        timeControl.setMinutesD(minD);
         timeControl.setIdUser(idUser);
         timeControlRepository.save(timeControl);
         return timeControl;

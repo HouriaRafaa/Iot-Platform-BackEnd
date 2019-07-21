@@ -1,6 +1,5 @@
 package com.example.canalservice.entities;
 
-import com.example.canalservice.models.AppUser;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.data.annotation.Id;

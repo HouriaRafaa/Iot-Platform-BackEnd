@@ -15,7 +15,7 @@ public class AppUser {
 
     private Long id;
     private String userName;
-
+    private long credit ;
 //    private  String password;
     private String email;
     private  boolean actived;

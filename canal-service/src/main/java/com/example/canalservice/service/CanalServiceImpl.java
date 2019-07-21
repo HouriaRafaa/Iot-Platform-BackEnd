@@ -5,7 +5,6 @@ import com.example.canalservice.dao.CanalRepository;
 import com.example.canalservice.dao.FieldRepository;
 import com.example.canalservice.entities.Canal;
 import com.example.canalservice.entities.Field;
-import com.example.canalservice.models.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

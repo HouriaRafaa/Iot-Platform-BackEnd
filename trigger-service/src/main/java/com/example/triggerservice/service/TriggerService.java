@@ -15,5 +15,5 @@ public interface TriggerService {
     public Triger saveTrigger(String nom, Long user, List<Commande>
             commandes);
 
-    TimeControl saveTimeControl(String nom, Date dateAction,int hour ,int min,Long idUser);
+    TimeControl saveTimeControl(String nom, Date dateAction,int hour ,int min,int hourA,int minD,Long idUser);
 }

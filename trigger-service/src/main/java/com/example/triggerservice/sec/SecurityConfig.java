@@ -34,7 +34,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //super.configure(web);
         web.httpFirewall(defaultHttpFirewall());
         web.ignoring().antMatchers("http://192.168.8.103:8091/ExecuteCommands/**",
-                        "/ExecuteCommands/**","/ExceuteTimeControl/**","/api/v1/sms")
+                        "/ExecuteCommands/**","/ExceuteTimeControl/**",
+
+                "/getTimeControle/**",
+                "/api/v1/sms")
                 .antMatchers(HttpMethod.GET,"/update-password/**");}
     @Override
     protected void configure(HttpSecurity http) throws Exception {

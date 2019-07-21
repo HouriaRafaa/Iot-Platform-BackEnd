@@ -6,19 +6,24 @@ import com.example.authentificationservice.dao.ConfirmationTokenRepository;
 import com.example.authentificationservice.entities.AppUser;
 import com.example.authentificationservice.entities.ConfirmationToken;
 import com.example.authentificationservice.service.AccountService;
-
 import com.example.authentificationservice.service.NewEmailSenderService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import java.io.UnsupportedEncodingException;
@@ -36,8 +41,6 @@ public class UserController {
     @Autowired
     private AppUserRepository userRepository;
 
-
-
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -47,6 +50,10 @@ public class UserController {
 
     @Autowired
     private NewEmailSenderService newEmailSenderService;
+
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @PostMapping("/register")
     public AppUser register(@RequestBody @Valid UserForm userForm) throws RuntimeException
@@ -58,6 +65,31 @@ public class UserController {
             throw new RuntimeException("Invalid user");
         }
         return accountService.saveUser(userForm.getUsername(),userForm.getEmail(),userForm.getPassword(),userForm.getPasswordConfirmed());
+    }
+
+    @PostMapping("/addUser")
+    public AppUser addUser(@RequestBody UserForm userForm, HttpServletRequest request) throws RuntimeException
+    {
+        AppUser user =userRepository.findByEmailIgnoreCase(userForm.getEmail());
+
+        if (user!= null) {
+            throw new RuntimeException("Invalid user");
+        }
+        AppUser result =  accountService.saveUser(userForm.getUsername(),userForm.getEmail(),userForm.getPassword(),userForm.getPasswordConfirmed());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", request.getHeader("Authorization"));
+        headers.add("content-type","application/json");
+
+        HttpEntity<UserForm> entity = new HttpEntity<>(userForm);
+        ResponseEntity<UserForm> responseEntity=restTemplate.exchange("http://achat-service/addUser/",
+                HttpMethod.POST,
+                entity,
+                UserForm.class,
+                result.getId()
+        );
+
+        return result ;
     }
 
     @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
@@ -174,7 +206,7 @@ class UserForm{
     private String email;
     private  String password;
     private String passwordConfirmed;
-
+    private String opt ;
     private String newPassword;
 
 }

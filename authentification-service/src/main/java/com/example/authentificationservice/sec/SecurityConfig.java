@@ -47,36 +47,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //super.configure(web);
         web.httpFirewall(defaultHttpFirewall());
         web.ignoring().antMatchers("http://192.168.8.103:8091/ExecuteCommands/**",
-                        "/ExecuteCommands/**","/api/v1/sms")
+                "/ExecuteCommands/**","/api/v1/sms")
                 .antMatchers(HttpMethod.GET,"/update-password/**");}
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-         http.csrf().disable();
-         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-         http.authorizeRequests().antMatchers("/login/**","/register/**","/record/**","/confirm-account/**",
-                 "/send-email",
-                 " 192.168.43.11/record/**"
-                 ,"/password-confirmation/**",
-                 "/reset-password/**"
-                 ,"/export-data/**").permitAll();
+        http.csrf().disable();
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.authorizeRequests().antMatchers("/login/**","/register/**","/record/**","/confirm-account/**",
+                "/send-email",
+                "/addUser/**",
+                " 192.168.43.11/record/**"
+                ,"/password-confirmation/**",
+                "/reset-password/**"
+                ,"/export-data/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.authorizeRequests().antMatchers(HttpMethod.GET,"/reset-password/**");
         http.authorizeRequests().antMatchers("/appUsers/**","/appRoles/**").hasAuthority("ADMIN");
 
 
 
-       //  http.authorizeRequests().antMatchers("/canals");
- //       http.authorizeRequests().antMatchers("/fields/**").permitAll();
+        //  http.authorizeRequests().antMatchers("/canals");
+        //       http.authorizeRequests().antMatchers("/fields/**").permitAll();
 
 
 //        http
 //                .authorizeRequests()
 //                .antMatchers( "/appUsers/{id}/canals").authenticated();
 
-         http.addFilter(new JWTAuthentificationFilter(authenticationManager()));
-         http.addFilterBefore(new JWTAutorisationFilter(),UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(new JWTAuthentificationFilter(authenticationManager()));
+        http.addFilterBefore(new JWTAutorisationFilter(),UsernamePasswordAuthenticationFilter.class);
 
-        }
+    }
 
 
 }
