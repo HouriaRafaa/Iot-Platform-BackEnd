@@ -166,15 +166,15 @@ public class TriggerController {
 
         }
 
-//        try {
-//            MqttClient mqttClient = mqttConnect();
-//            MqttMessage mqttMessage = new MqttMessage(c.getValeur().getBytes());
-//            mqttMessage.setQos(qos);
-//            mqttClient.publish("IOT", mqttMessage);
-//            System.out.println("Message published");
-//        } catch (Exception e) {
-//
-//        }
+        try {
+            MqttClient mqttClient = mqttConnect();
+            MqttMessage mqttMessage = new MqttMessage(c.getValeur().getBytes());
+            mqttMessage.setQos(qos);
+            mqttClient.publish("IOT", mqttMessage);
+            System.out.println("Message published");
+        } catch (Exception e) {
+
+        }
 
         return c.getValeur();
 

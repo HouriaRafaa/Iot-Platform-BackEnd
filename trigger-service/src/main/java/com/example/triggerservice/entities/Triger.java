@@ -2,15 +2,13 @@ package com.example.triggerservice.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Collection;
 
-@Entity @Data @AllArgsConstructor @NoArgsConstructor @ToString
+@Entity @Getter @Setter
+@AllArgsConstructor @NoArgsConstructor
 public class Triger {
 
 
@@ -29,5 +27,13 @@ public class Triger {
     @OneToMany(mappedBy = "triger")
     private Collection<Commande>commandes;
 
-
+    @Override
+    public String toString() {
+        return "Triger{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", apikey='" + apikey + '\'' +
+                ", user=" + user +
+                '}';
+    }
 }

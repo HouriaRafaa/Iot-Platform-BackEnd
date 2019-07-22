@@ -2,14 +2,13 @@ package com.example.triggerservice.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Entity @Data @NoArgsConstructor @AllArgsConstructor @ToString
+@Entity @Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Commande {
 
 
@@ -20,9 +19,17 @@ public class Commande {
 
     private boolean executed;
 
+
     @JsonBackReference
     @ManyToOne
     private Triger triger;
 
-
+    @Override
+    public String toString() {
+        return "Commande{" +
+                "id=" + id +
+                ", valeur='" + valeur + '\'' +
+                ", executed=" + executed +
+                '}';
+    }
 }
