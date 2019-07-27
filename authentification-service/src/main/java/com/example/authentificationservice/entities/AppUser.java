@@ -1,7 +1,6 @@
 package com.example.authentificationservice.entities;
 
 
-import com.example.authentificationservice.models.Canal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,11 +36,5 @@ public class AppUser {
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<AppRole> roles = new ArrayList<>();
 
- public AppUser(String userName, String password, boolean actived, Collection<Canal> canals, Collection<AppRole> roles) {
-  this.userName = userName;
-  this.password = password;
-  this.actived = actived;
 
-  this.roles = roles;
- }
 }

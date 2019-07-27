@@ -51,39 +51,12 @@ public class CanalReactController {
 
         Long userId = canal.getAppUser() ;
 
-        System.out.println("hhhhhhhhhhhhhhh");
-        System.out.println("use id from auth " +userId);
-
-        ResponseEntity<AppUser> resp1= restTemplate.exchange(
-                "http://authentification-service/appUsers/"+String.valueOf(userId) ,
-                HttpMethod.GET,
-                new HttpEntity<>("parameters", headers),
-                AppUser.class);
-
-        String mail = resp1.getBody().getEmail() ;
-
-        ResponseEntity<Long> resp3= restTemplate.exchange(
-                "http://achat-service/appUsers/getId/"+mail ,
-                HttpMethod.GET,
-                new HttpEntity<>("parameters", headers),
-                Long.class);
-        Long userId2 = resp3.getBody() ;
-
-        ResponseEntity<AppUser> resp= restTemplate.exchange("http://achat-service/appUsers/"+String.valueOf(userId2),
-                HttpMethod.GET,
-                new HttpEntity<>("parameters", headers),
-                AppUser.class
-        );
-
-        long credit = resp.getBody().getCredit() ;
-
-
         Pusher pusher = new Pusher("762880", "84bee67aad46ed497369", "5017a5ee0387085255ae");
         pusher.setCluster("eu");
         pusher.setEncrypted(true);
 
         //  pusher.Triger("my-channel", "my-event", Collections.singletonMap("message", "hello world"));
-        if(credit> 0) {
+
             for (Field field : canal.getFields()) {
                 for (Map.Entry<String, String> entry : allParams.entrySet()) {
                     if (field.getNom().equalsIgnoreCase(entry.getKey())) {
@@ -91,11 +64,6 @@ public class CanalReactController {
                             Double data = Double.parseDouble(entry.getValue());
                             System.out.println("aaaaaaaaaaaaaaaaaaaaaaa  " + field.getNom());
                             Valeur valeur = new Valeur(data, field, new Date(), new Date());
-                            ResponseEntity<AppUser> responseEntity2 = restTemplate.exchange("http://achat-service/debiter/" + String.valueOf(userId2),
-                                    HttpMethod.GET,
-                                    new HttpEntity<>("parameters", headers),
-                                    AppUser.class
-                            );
                             valeurRepository.save(valeur);
                             //myvalues.add(valeur);
                             field.getValeur().add(valeur);
@@ -127,21 +95,7 @@ public class CanalReactController {
                 }
             }
             return " " + allParams.entrySet();
-        }
-        else return "Credit non suffisant" ;
+
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

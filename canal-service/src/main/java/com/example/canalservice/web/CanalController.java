@@ -7,7 +7,6 @@ import com.example.canalservice.entities.Canal;
 import com.example.canalservice.entities.Field;
 import com.example.canalservice.entities.Valeur;
 import com.example.canalservice.models.AppUser;
-import com.example.canalservice.models.Stats;
 import com.example.canalservice.service.CanalService;
 import com.example.canalservice.service.NextSequenceService;
 import lombok.AllArgsConstructor;
@@ -280,79 +279,8 @@ public class CanalController {
         return c;
     }
 
-    @GetMapping(value = "/getMessagesCount/{id}")
-    public List<Stats>getMessageCount(@PathVariable Long id) {
-
-        List<Canal> canals = canalRepository.findCanalByAppUser(id);
-        HashMap<String, Long> result = new HashMap<>();
-
-        for (Canal canal : canals) {
 
 
-            List<Field> fields = (List<Field>) canal.getFields();
-
-            for (Field field : fields) {
-                int id_field = field.getFieldId();
-
-
-                Criteria criteria = Criteria.where("field").is(id_field);
-                AggregationOperation match = Aggregation.match(criteria);
-                AggregationOperation group = Aggregation.project("date");
-                Aggregation agg = newAggregation(match, group);
-
-                //                Aggregation agg = Aggregation.newAggregation(
-//                        //add field id
-//                        project("date")
-//                );
-
-                AggregationResults<Stats> results = mongoTemplate.aggregate(agg, Valeur.class, Stats.class);
-                List<Stats> result1 = results.getMappedResults();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-                List<String> lis = result1.stream().map(e -> formatter.format(e.getDate())).collect(Collectors.toList());
-                Map<String, Long> counted = lis.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-
-                counted.forEach((k, v) ->
-                        {
-                            if (!result.containsKey(k)) {
-                                System.out.println("Adding new tuple in the map " + k + " " + v);
-                                result.put(k, v);
-                            } else {
-                                System.out.println("updating tuple in the map " + k + " " + v);
-                                result.put(k, result.get(k) + v);
-                            }
-                        }
-                );
-            }
-        }
-
-        Set<Map.Entry<String, Long>> productEntry = result.entrySet();
-        ArrayList<Map.Entry<String, Long>> productListOfEntry = new ArrayList<Map.Entry<String, Long>>(productEntry);
-
-        ArrayList<Stats> resultList = new ArrayList<>();
-
-        for (Map.Entry<String, Long> entry : productListOfEntry) {
-            resultList.add(new Stats(entry.getKey(), entry.getValue()));
-        }
-        return resultList;
-    }
-    @GetMapping(value = "/getCanalsCount")
-    public long getCanalsCount()
-    {
-        return canalRepository.count() ;
-    }
-
-
-    @RequestMapping(value = "/canals",method = RequestMethod.GET)
-    public List<Canal> getCanals() {
-
-        List<Canal> canals = canalRepository.findAll();
-
-        if (canals.size() >0) {
-            return canals;
-
-        }
-        return  null;
-    }
 
     @RequestMapping(value = "/read", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

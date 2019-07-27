@@ -67,30 +67,7 @@ public class UserController {
         return accountService.saveUser(userForm.getUsername(),userForm.getEmail(),userForm.getPassword(),userForm.getPasswordConfirmed());
     }
 
-    @PostMapping("/addUser")
-    public AppUser addUser(@RequestBody UserForm userForm, HttpServletRequest request) throws RuntimeException
-    {
-        AppUser user =userRepository.findByEmailIgnoreCase(userForm.getEmail());
 
-        if (user!= null) {
-            throw new RuntimeException("Invalid user");
-        }
-        AppUser result =  accountService.saveUser(userForm.getUsername(),userForm.getEmail(),userForm.getPassword(),userForm.getPasswordConfirmed());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", request.getHeader("Authorization"));
-        headers.add("content-type","application/json");
-
-        HttpEntity<UserForm> entity = new HttpEntity<>(userForm);
-        ResponseEntity<UserForm> responseEntity=restTemplate.exchange("http://achat-service/addUser/",
-                HttpMethod.POST,
-                entity,
-                UserForm.class,
-                result.getId()
-        );
-
-        return result ;
-    }
 
     @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
     public String confirmUserAccount(@RequestParam("token")String confirmationToken)
@@ -126,17 +103,6 @@ public class UserController {
 
             ConfirmationToken confirmationToken= new ConfirmationToken(appUser);
             confirmationTokenRepository.save(confirmationToken);
-//
-//            SimpleMailMessage mailMessage = new SimpleMailMessage();
-//            mailMessage.setTo(appUser.getEmail());
-//            mailMessage.setSubject("Reset Your Password!");
-//            mailMessage.setFrom("esisba.iot@gmail.com");
-//            mailMessage.setText("To reset your password, please click here : "
-//                    + "http://localhost:8080/update-password?token=" + confirmationToken.getConfirmationToken());
-//            emailSenderService.sendEmail(mailMessage);
-
-
-            // sending verification email
 
             try {
                 newEmailSenderService.sendEmail(appUser.getEmail(),appUser.getUserName(),"Reset Your Password!","To reset your password, please click here : "
@@ -148,16 +114,6 @@ public class UserController {
         return  "Message Envoyé";
     }
 
-//    @RequestMapping(value = "password-confirmation",method = RequestMethod.GET)
-//
-//    public String getPasswordConfirmation(@RequestParam("token")String confirmationToken) {
-//
-//        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
-//        if (token != null) {
-//            return "Lien visité";
-//        }
-//        return null;
-//    }
 
 
     @RequestMapping(value = "reset-password",method= {RequestMethod.GET, RequestMethod.POST})
