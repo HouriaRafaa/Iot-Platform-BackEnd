@@ -1,5 +1,6 @@
 package com.example.authentificationservice;
 
+import com.example.authentificationservice.dao.AppRoleRepository;
 import com.example.authentificationservice.entities.AppRole;
 import com.example.authentificationservice.entities.AppUser;
 import com.example.authentificationservice.service.AccountService;
@@ -43,13 +44,20 @@ public class AuthentificationServiceApplication implements RepositoryRestConfigu
 	@Autowired
 	private RepositoryRestConfiguration repositoryRestConfiguration;
 
+	@Autowired
+	private AppRoleRepository appRoleRepository;
+
 	@Override
 	public void run(String... args) throws Exception {
 
 		repositoryRestConfiguration.exposeIdsFor(AppUser.class,AppRole.class);
 
-//		  accountService.saveRole(new AppRole(null,"USER"));
-//		accountService.saveRole(new AppRole(null,"ADMIN"));
+		if(appRoleRepository.count()==0)
+		{
+			accountService.saveRole(new AppRole(null,"USER"));
+			accountService.saveRole(new AppRole(null,"ADMIN"));
+
+		}
 
 
 

@@ -60,9 +60,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 ,"/password-confirmation/**",
                 "/reset-password/**"
                 ,"/export-data/**").permitAll();
-        http.authorizeRequests().anyRequest().authenticated();
-        http.authorizeRequests().antMatchers(HttpMethod.GET,"/reset-password/**");
         http.authorizeRequests().antMatchers("/appUsers/**","/appRoles/**").hasAuthority("ADMIN");
+        http.authorizeRequests().anyRequest().authenticated();
+
+
 
 
 
